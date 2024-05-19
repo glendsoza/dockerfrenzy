@@ -1,0 +1,55 @@
+.modal {
+    /* Hide the modal by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent black background */
+    z-index: 1000;
+    /* Ensure the modal is above other content */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    width: 50%;
+    position: relative;
+}
+
+.modal-content label {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-content .response_error {
+    color: red;
+    margin-top: 5px;
+}
+
+.modal-content .response_success {
+    color: green;
+    margin-top: 5px;
+}
+
+.modal-content button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: blue;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
