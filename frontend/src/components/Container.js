@@ -80,7 +80,7 @@ export default function Container() {
 
   return (
     <div>
-      <NavBar linkMap={[{ link: "/", name: "Machines" }, { link: `/machine?ip=${query.get("ip")}`, name: "Machine Info" }, { link: `http://${process.env.REACT_APP_EXEC_SERVER_URL}/config/show`, name: "Config" }]} />
+      <NavBar linkMap={[{ link: "/", name: "Machines" }, { link: `/machine?ip=${query.get("ip")}`, name: "Machine Info" }, { link: `/config`, name: "Config" }]} />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{
           backgroundColor: 'rgb(249, 245, 227)', // Changed background color to lighter

@@ -96,7 +96,7 @@ export default function MachineInfo() {
   };
   return (
     <div>
-      <NavBar linkMap={[{link: "/", name:"Machines"},{link:`http://${process.env.REACT_APP_EXEC_SERVER_URL}/config/show`, name:"Config"}]}/>
+      <NavBar linkMap={[{link: "/", name:"Machines"},{link:`/config`, name:"Config"}]}/>
     <div>
     <h2 style={{ textAlign: 'center'}}>Containers</h2>
     <div style={{ display: 'flex', justifyContent: 'flex-end'}}>

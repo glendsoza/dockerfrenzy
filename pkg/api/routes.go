@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
-	"github.com/alecthomas/chroma/quick"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
@@ -119,9 +117,7 @@ func getConfig(c *gin.Context) {
 		c.JSON(500, &Response{Error: err.Error()})
 		return
 	}
-	s := &strings.Builder{}
-	quick.Highlight(s, string(data), "yaml", "html", "dracula")
-	c.JSON(200, &ConfigResponse{HTML: s.String(), Raw: string(data)})
+	c.JSON(200, &ConfigResponse{Data: string(data)})
 }
 
 func createContainer(c *gin.Context) {

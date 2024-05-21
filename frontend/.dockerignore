@@ -1,2 +1,3 @@
 node_modules
 
+ssh-keygen -t ed25519 -C "glendsouza23@gmail.com"

@@ -37,8 +37,7 @@ type ImageResponse struct {
 
 type ConfigResponse struct {
 	Response
-	HTML string
-	Raw  string
+	Data  string
 }
 
 type CreateContainerPayload struct {

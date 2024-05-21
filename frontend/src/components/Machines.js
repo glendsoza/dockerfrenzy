@@ -123,7 +123,7 @@ export default function Machines() {
   return (
     <div>
       {showModal && <Modal onClose={() => setShowModal(false)} />}
-      <NavBar linkMap={[{ link: "/", name: "Machines" }, { link: `http://${process.env.REACT_APP_EXEC_SERVER_URL}/config/show`, name: "Config" }]} />
+      <NavBar linkMap={[{ link: "/", name: "Machines" }, { link: `/config`, name: "Config" }]} />
       <h2 style={{ textAlign: 'center', margin: '20px 0' }}>Machines</h2>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
         <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 20px', cursor: 'pointer', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', transition: 'background-color 0.3s', }}>

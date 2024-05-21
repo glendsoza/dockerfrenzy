@@ -6,6 +6,7 @@ import Image from './components/Image'
 import MachineExec from "./components/MachineExec";
 import ContainerExec from "./components/ContainerExec";
 import ContainerLog from "./components/ContainerLog";
+import Config from "./components/Config";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/machine/exec" element={<MachineExec />} />
         <Route path="/container/exec" element={<ContainerExec />} />
         <Route path="/container/log" element={<ContainerLog />} />
+        <Route path="/config" element={<Config />} />
       </Routes>
     </div>
   );

@@ -29,6 +29,7 @@ func Run() error {
 		},
 		MaxAge: 12 * time.Hour,
 	}))
+	router.GET("/machines", listMachines)
 	router.GET("/containers", listContainers)
 	router.GET("/images", listImages)
 	router.GET("/container/action", performActionOnContainer)
