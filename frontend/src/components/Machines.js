@@ -48,6 +48,8 @@ export default function Machines() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false)
+  const [snackBarMessage, setSnackbarMessage] = useState("")
+  const [snackBarAlertSeverity, setsnackBarAlertSeverity] = useState("info")
 
   useEffect(() => {
     fetch(`http://${process.env.REACT_APP_API_SERVER_URL}/machines`)
@@ -57,8 +59,10 @@ export default function Machines() {
         setIsLoading(false);
       })
       .catch(error => {
-        console.log(error)
+        console.error(error)
         setRows([])
+        setSnackbarMessage("something went wrong while connecting to api server")
+        setsnackBarAlertSeverity("error")
         setSnackBarOpen(true)
         setIsLoading(false);
       });
@@ -145,7 +149,7 @@ export default function Machines() {
           rowData={rows}
         ></AgGridReact>
       </div>
-      <Notification open={snackBarOpen} setOpen={setSnackBarOpen} />
+      <Notification open={snackBarOpen} setOpen={setSnackBarOpen} message={snackBarMessage} severity={snackBarAlertSeverity} />
     </div>
   );
 }
