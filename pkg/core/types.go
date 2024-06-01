@@ -35,7 +35,7 @@ type Machine struct {
 	HostName  string
 	Shell     string
 	Error     string
-	SSHConfig *MachineSSHConfig
+	SSHConfig *MachineSSHConfig `json:"-"`
 }
 
 func (m *Machine) getSSHConn() (*ssh.Client, error) {
