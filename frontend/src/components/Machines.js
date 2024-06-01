@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
+import { enqueueSnackbar } from 'notistack'
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Notification from "./Notification";
 import { LaunchOutlined as ExecIcon } from '@mui/icons-material';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
@@ -47,23 +47,24 @@ export default function Machines() {
   const [gridApi, setGridApi] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [snackBarOpen, setSnackBarOpen] = useState(false)
-  const [snackBarMessage, setSnackbarMessage] = useState("")
-  const [snackBarAlertSeverity, setsnackBarAlertSeverity] = useState("info")
 
   useEffect(() => {
     fetch(`http://${process.env.REACT_APP_API_SERVER_URL}/machines`)
       .then(response => response.json())
       .then(data => {
-        setRows(data.Machines);
-        setIsLoading(false);
+        if (data.error !== "") {
+          setRows(data.Machines);
+          setIsLoading(false);
+        } else {
+          setRows([])
+          enqueueSnackbar(data.Error, { variant: "error" })
+          setIsLoading(false);
+        }
       })
       .catch(error => {
         console.error(error)
         setRows([])
-        setSnackbarMessage("something went wrong while connecting to api server")
-        setsnackBarAlertSeverity("error")
-        setSnackBarOpen(true)
+        enqueueSnackbar("something went wrong while connecting to api server", { variant: "error" })
         setIsLoading(false);
       });
   }, []);
@@ -127,9 +128,9 @@ export default function Machines() {
   return (
     <div>
       {showModal && <Modal onClose={() => setShowModal(false)} />}
-      <NavBar linkMap={[{ link: "/", name: "Machines" }, { link: `/config`, name: "Config" }]} />
+      <NavBar linkMap={[{ link: `/config`, name: "Config" }]} />
       <h2 style={{ textAlign: 'center', margin: '20px 0' }}>Machines</h2>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
         <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 20px', cursor: 'pointer', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', transition: 'background-color 0.3s', }}>
           <FaUndo style={{ marginRight: '5px' }} />
           Reset Filters
@@ -149,7 +150,6 @@ export default function Machines() {
           rowData={rows}
         ></AgGridReact>
       </div>
-      <Notification open={snackBarOpen} setOpen={setSnackBarOpen} message={snackBarMessage} severity={snackBarAlertSeverity} />
     </div>
   );
 }

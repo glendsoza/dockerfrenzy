@@ -1,8 +1,8 @@
 package config
 
 import (
-	"log"
 	"os"
+	"sync"
 
 	"github.com/spf13/viper"
 )
@@ -23,15 +23,35 @@ type SSHConfig struct {
 	Ips          []string `yaml:"ips"`
 }
 
-var Config []*SSHConfig
+type Config struct {
+	config []*SSHConfig
+	lock   sync.Mutex
+}
 
-func init() {
-	// set the config object so that it can be used everywhere and also set the viper config
-	// initialize the viper settings
-	viper.SetConfigFile(os.Getenv("CONFIG_FILE_PATH"))
+func NewConfig() (*Config, error) {
+	config := &Config{config: []*SSHConfig{}}
+	err := config.load()
+	return config, err
+}
+
+func (c *Config) Get() []*SSHConfig {
+	// create a copy and return it
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	configList := []*SSHConfig{}
+	for _, c := range c.config {
+		temp := *c
+		configList = append(configList, &temp)
+	}
+	return configList
+}
+
+func (c *Config) load() error {
+	c.lock.Lock()
+	defer c.lock.Unlock()
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	var ConfigData struct {
 		ConfigList []struct {
@@ -40,11 +60,22 @@ func init() {
 	}
 	err = viper.UnmarshalExact(&ConfigData)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	configList := []*SSHConfig{}
 	for _, t := range ConfigData.ConfigList {
 		configList = append(configList, t.SshConfig)
 	}
-	Config = configList
+	c.config = configList
+	return nil
+}
+
+func (c *Config) Reload() error {
+	return c.load()
+}
+
+func init() {
+	// set the config object so that it can be used everywhere and also set the viper config
+	// initialize the viper settings
+	viper.SetConfigFile(os.Getenv("CONFIG_FILE_PATH"))
 }

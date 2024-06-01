@@ -12,7 +12,6 @@ import (
 )
 
 func Run() error {
-	// set the ce
 	executor, err := core.NewCommandExecutor()
 	if err != nil {
 		log.Fatal(err)
@@ -43,5 +42,6 @@ func Run() error {
 	router.GET("/machine/exec", execIntoMachine)
 	router.GET("/container/exec", execIntoContainer)
 	router.GET("/container/log", streamContainerLogs)
+	router.POST("/config/reload", reloadConfig)
 	return router.Run(fmt.Sprintf(":%s", os.Getenv("API_SERVER_PORT")))
 }

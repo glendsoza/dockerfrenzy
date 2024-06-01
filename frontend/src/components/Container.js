@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+import { enqueueSnackbar } from 'notistack';
 import useWebSocket from 'react-use-websocket';
-import ReactJson from 'react-json-view';
+import JsonView from 'react18-json-view'
+import 'react18-json-view/src/style.css'
 import CircularProgress from '@mui/material/CircularProgress';
 import {
   FileCopyOutlined as LogsIcon,
@@ -25,9 +25,6 @@ function useQuery() {
 export default function Container() {
   const [containerData, setContainerData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [buttonsDisabled, setButtonsDisabled] = useState(false); // State to control button disabled state
 
   const query = useQuery();
@@ -52,15 +49,17 @@ export default function Container() {
       .then(resp => resp.json())
       .then(data => {
         if (data.Error) {
-          setSnackbarSeverity('error');
-          setSnackbarMessage(data.Error);
+          enqueueSnackbar("something went wrong while connecting to api server", { variant: "error" })
         } else {
-          setSnackbarSeverity('success');
-          setSnackbarMessage(`Container ${action}ed successfully`);
+          enqueueSnackbar(`container ${action}ed successfully`, { variant: "success" })
         }
-        setSnackbarOpen(true);
         setButtonsDisabled(false); // Enable buttons after action is completed
-      });
+      })
+      .catch(error => {
+        console.log(error)
+        enqueueSnackbar("something went wrong while connecting to api server", { variant: "error" })
+        setButtonsDisabled(false); // Enable buttons after action is completed
+      })
   };
 
   const handleLogs = () => {
@@ -69,13 +68,6 @@ export default function Container() {
 
   const execIntoContainer = () => {
     window.open(`/container/exec?ip=${query.get("ip")}&containerID=${query.get("containerID")}`, '_blank');
-  };
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
   };
 
   return (
@@ -142,19 +134,8 @@ export default function Container() {
       </script>
 
       {!loading && containerData && (
-        <ReactJson src={containerData} theme="monokai" />
+        <JsonView src={containerData} theme="vscode" />
       )}
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <MuiAlert elevation={6} variant="filled" onClose={handleCloseSnackbar} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </MuiAlert>
-      </Snackbar>
     </div>
   );
 }

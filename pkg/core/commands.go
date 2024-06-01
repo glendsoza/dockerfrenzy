@@ -12,81 +12,85 @@ import (
 )
 
 func NewCommandExecutor() (*CommandExecutor, error) {
-	// get the config
-	ce := &CommandExecutor{machines: make(Machines)}
-	ce.loadMachines()
-	maxWorkers := make(chan int, 10)
-	var wg sync.WaitGroup
-	for _, machine := range ce.machines {
-		maxWorkers <- 1
-		wg.Add(1)
-		go func(m *Machine) {
-			defer wg.Done()
-			data, err := ce.GetHostNameAndOs(m.Ip)
-			if err != nil {
-				m.Error = err.Error()
-			} else {
-				splitData := strings.Split(data, "\n")
-				if len(splitData) != 2 {
-					m.Error = fmt.Sprintf("unable to determine os or hostname from %s", data)
-				} else {
-					m.HostName = strings.TrimSpace(splitData[0])
-					m.Os = strings.TrimSpace(splitData[1])
-				}
-			}
-			data, err = ce.GetShell(m.Ip)
-			if err != nil {
-				// combine error
-				m.Error = fmt.Sprintf("%s\n%s", err.Error(), m.Error)
-			} else {
-				m.Shell = strings.TrimSpace(data)
-			}
-			<-maxWorkers
-		}(machine)
+	config, err := config.NewConfig()
+	if err != nil {
+		return nil, err
 	}
-	wg.Wait()
+	ce := &CommandExecutor{machines: make(Machines), config: config}
+	ce.loadMachines()
 	return ce, nil
 }
 
 type CommandExecutor struct {
 	machines Machines
 	lock     sync.RWMutex
+	config   *config.Config
+}
+
+func (ce *CommandExecutor) ReloadConfig() error {
+	if err := ce.config.Reload(); err != nil {
+		return err
+	}
+	ce.loadMachines()
+	return nil
 }
 
 func (ce *CommandExecutor) loadMachines() {
 	var wg sync.WaitGroup
 	maxWorkers := make(chan int, 10)
-	for _, c := range config.Config {
-		for _, ip := range c.Ips {
-			maxWorkers <- 1
-			wg.Add(1)
-			go func(ip string) {
-				defer wg.Done()
-				parsedIp := net.ParseIP(ip)
-				m := &Machine{Ip: ip, Status: MachineOnline, parsedIp: parsedIp, SSHConfig: &MachineSSHConfig{
-					PasswordAuth: &config.PasswordAuth{
-						Username: c.PasswordAuth.Username,
-						Password: c.Password,
-					},
-					SSHAuth: &config.SSHAuth{Username: c.SSHAuth.Username, PrivateKeyPath: c.PrivateKeyPath},
-				}}
-				if parsedIp == nil {
-					// see if its valid host
-					ips, _ := net.LookupIP(ip)
-					if len(ips) > 0 {
-						m.parsedIp = ips[0]
-					} else {
-						m.Status = MachineOffline
-						m.Error = fmt.Sprintf("unable to parse %s as valid ip", ip)
-						fmt.Println(m.Error)
+	for _, c := range ce.config.Get() {
+		{
+			for _, ip := range c.Ips {
+				maxWorkers <- 1
+				wg.Add(1)
+				go func(ip string) {
+					defer wg.Done()
+					parsedIp := net.ParseIP(ip)
+					m := &Machine{Ip: ip, Status: MachineOnline, parsedIp: parsedIp, SSHConfig: &MachineSSHConfig{
+						PasswordAuth: &config.PasswordAuth{
+							Username: c.PasswordAuth.Username,
+							Password: c.Password,
+						},
+						SSHAuth: &config.SSHAuth{Username: c.SSHAuth.Username, PrivateKeyPath: c.PrivateKeyPath},
+					}}
+					ce.addMachine(ip, m)
+					if parsedIp == nil {
+						// see if its valid host
+						ips, _ := net.LookupIP(ip)
+						if len(ips) > 0 {
+							m.parsedIp = ips[0]
+						} else {
+							m.Status = MachineOffline
+							m.Error = fmt.Sprintf("unable to parse %s as valid ip", ip)
+							fmt.Println(m.Error)
+							return
+						}
 					}
-				}
-				ce.addMachine(ip, m)
-				<-maxWorkers
-			}(ip)
+					data, err := ce.GetHostNameAndOs(m.Ip)
+					if err != nil {
+						m.Error = err.Error()
+					} else {
+						splitData := strings.Split(data, "\n")
+						if len(splitData) != 2 {
+							m.Error = fmt.Sprintf("unable to determine os or hostname from %s", data)
+						} else {
+							m.HostName = strings.TrimSpace(splitData[0])
+							m.Os = strings.TrimSpace(splitData[1])
+						}
+					}
+					data, err = ce.GetShell(m.Ip)
+					if err != nil {
+						// combine error
+						m.Error = fmt.Sprintf("%s\n%s", err.Error(), m.Error)
+					} else {
+						m.Shell = strings.TrimSpace(data)
+					}
+					<-maxWorkers
+				}(ip)
+			}
 		}
+		wg.Wait()
 	}
-	wg.Wait()
 }
 
 func (ce *CommandExecutor) getMachines() []*Machine {

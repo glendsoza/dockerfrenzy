@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 import useWebSocket from 'react-use-websocket';
-import ReactJson from 'react-json-view';
+import JsonView from 'react18-json-view';
+import 'react18-json-view/src/style.css'
 import CircularProgress from '@mui/material/CircularProgress';
 import {
   LaunchOutlined as CreateContainerIcon
@@ -48,12 +47,10 @@ export default function Container() {
 
   const handleCreateContainer = () => {
     setModalOpen(true);
-    // Implement your logic to handle creation of container
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    // Implement logic to close the modal
   };
 
 
@@ -102,7 +99,7 @@ export default function Container() {
       </div>
 
       {!loading && imageData && (
-        <ReactJson src={imageData} theme="monokai" />
+        <JsonView src={imageData} theme="vscode" />
       )}
       {/* Modal Form */}
       {modalOpen && (

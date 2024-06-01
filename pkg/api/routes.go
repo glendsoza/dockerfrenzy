@@ -189,3 +189,14 @@ func streamContainerLogs(c *gin.Context) {
 		return
 	}
 }
+
+func reloadConfig(c *gin.Context) {
+	err := ce.ReloadConfig()
+	response := &Response{Error: ""}
+	if err != nil {
+		response.Error = err.Error()
+		c.JSON(500, response)
+		return
+	}
+	c.JSON(200, response)
+}
