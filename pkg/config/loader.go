@@ -74,6 +74,14 @@ func (c *Config) Reload() error {
 	return c.load()
 }
 
+func (c *Config) Update(data []byte) error {
+	// write the data to the file
+	if err := os.WriteFile(os.Getenv("CONFIG_FILE_PATH"), data, 0600); err != nil {
+		return err
+	}
+	return c.load()
+}
+
 func init() {
 	// set the config object so that it can be used everywhere and also set the viper config
 	// initialize the viper settings

@@ -4,21 +4,19 @@ go 1.22
 
 require (
 	docker.io/go-docker v1.0.0
-	github.com/alecthomas/chroma v0.10.0
 	github.com/creack/pty v1.1.21
+	github.com/dchest/uniuri v1.2.0
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.16.0
-	golang.org/x/term v0.15.0
 )
 
 require (
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
-	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect

@@ -4,6 +4,7 @@ import (
 	"crazydocker/pkg/config"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
 	"os/exec"
@@ -48,11 +49,11 @@ func (m *Machine) getSSHConn() (*ssh.Client, error) {
 			Timeout: 5 * time.Second,
 		}
 		if m.SSHConfig.SSHAuth.PrivateKeyPath != "" {
-			pemBytes, err := os.ReadFile(m.SSHConfig.SSHAuth.PrivateKeyPath)
+			pemByes, err := os.ReadFile(m.SSHConfig.SSHAuth.PrivateKeyPath)
 			if err != nil {
 				return nil, err
 			}
-			signer, err := ssh.ParsePrivateKey(pemBytes)
+			signer, err := ssh.ParsePrivateKey(pemByes)
 			if err != nil {
 				return nil, err
 			}
@@ -155,12 +156,12 @@ func (m *Machine) ExecCommand(writeConn *websocket.Conn, cmd string) error {
 			defer ptmx.Close()
 			_, data, err := writeConn.ReadMessage()
 			if err != nil {
-				fmt.Printf("reader err :%s\n", err)
+				log.Printf("reader err :%s\n", err)
 				return
 			}
 			_, err = ptmx.Write(data)
 			if err != nil {
-				fmt.Printf("ptmx write err :%s\n", err)
+				log.Printf("ptmx write err :%s\n", err)
 				return
 			}
 		}
@@ -173,12 +174,12 @@ func (m *Machine) ExecCommand(writeConn *websocket.Conn, cmd string) error {
 			n, err := ptmx.Read(buf)
 			if err != nil {
 				if err != io.EOF {
-					fmt.Printf("ptmx read err :%s\n", err)
+					log.Printf("ptmx read err :%s\n", err)
 					return
 				}
 			}
 			if err := writeConn.WriteMessage(websocket.BinaryMessage, buf[:n]); err != nil {
-				fmt.Printf("writer err :%s\n", err)
+				log.Printf("writer err :%s\n", err)
 				return
 			}
 		}

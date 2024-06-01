@@ -34,7 +34,6 @@ func Run() error {
 	router.GET("/container/action", performActionOnContainer)
 	router.GET("/container/stream", streamContainer)
 	router.GET("/image/stream", streamImage)
-	router.GET("/config", getConfig)
 	router.POST("/container/create", createContainer)
 	router.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(200, map[string]string{"status": "ok"})
@@ -42,6 +41,8 @@ func Run() error {
 	router.GET("/machine/exec", execIntoMachine)
 	router.GET("/container/exec", execIntoContainer)
 	router.GET("/container/log", streamContainerLogs)
+	router.GET("/config", getConfig)
 	router.POST("/config/reload", reloadConfig)
+	router.POST("/config/update", updateConfig)
 	return router.Run(fmt.Sprintf(":%s", os.Getenv("API_SERVER_PORT")))
 }

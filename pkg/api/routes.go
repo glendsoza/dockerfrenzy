@@ -129,7 +129,6 @@ func createContainer(c *gin.Context) {
 	}
 	out, err := ce.CreateContainer(payload.Ip, payload.Image, payload.Args)
 	if err != nil {
-		fmt.Println()
 		c.JSON(500, &CreateContainerResponse{Msg: out, Response: Response{Error: err.Error()}})
 		return
 	}
@@ -199,4 +198,21 @@ func reloadConfig(c *gin.Context) {
 		return
 	}
 	c.JSON(200, response)
+}
+
+func updateConfig(c *gin.Context) {
+	var ConfigData struct {
+		Config string `json:"config"`
+	}
+	err := c.ShouldBindYAML(&ConfigData)
+	if err != nil {
+		c.JSON(500, &Response{Error: err.Error()})
+		return
+	}
+	err = ce.UpdateConfig([]byte(ConfigData.Config))
+	if err != nil {
+		c.JSON(500, &Response{Error: err.Error()})
+		return
+	}
+	c.JSON(200, &Response{Error: ""})
 }

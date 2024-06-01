@@ -4,6 +4,7 @@ import (
 	"crazydocker/pkg/config"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"sync"
@@ -35,9 +36,18 @@ func (ce *CommandExecutor) ReloadConfig() error {
 	return nil
 }
 
+func (ce *CommandExecutor) UpdateConfig(data []byte) error {
+	if err := ce.config.Update(data); err != nil {
+		return err
+	}
+	ce.loadMachines()
+	return nil
+}
+
 func (ce *CommandExecutor) loadMachines() {
 	var wg sync.WaitGroup
 	maxWorkers := make(chan int, 10)
+	ce.clearMachines()
 	for _, c := range ce.config.Get() {
 		{
 			for _, ip := range c.Ips {
@@ -62,7 +72,7 @@ func (ce *CommandExecutor) loadMachines() {
 						} else {
 							m.Status = MachineOffline
 							m.Error = fmt.Sprintf("unable to parse %s as valid ip", ip)
-							fmt.Println(m.Error)
+							log.Println(m.Error)
 							return
 						}
 					}
@@ -115,6 +125,12 @@ func (ce *CommandExecutor) addMachine(ip string, m *Machine) {
 	ce.lock.Lock()
 	defer ce.lock.Unlock()
 	ce.machines[ip] = m
+}
+
+func (ce *CommandExecutor) clearMachines() {
+	ce.lock.Lock()
+	defer ce.lock.Unlock()
+	ce.machines = make(Machines)
 }
 
 func (ce *CommandExecutor) ListMachines() []*Machine {
