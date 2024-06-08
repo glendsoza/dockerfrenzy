@@ -140,9 +140,9 @@ func (m *Machine) ExecCommand(writeConn *websocket.Conn, cmd string) error {
 	// use pty here as it combines stdout and error
 	var command *exec.Cmd
 	if m.SSHConfig.Password != "" {
-		command = exec.Command("sshpass", "-p", "password", "ssh", "-tt", "-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", fmt.Sprintf("%s@%s", m.SSHConfig.PasswordAuth.Username, m.Ip), cmd)
+		command = exec.Command("sshpass", "-p", m.SSHConfig.Password, "ssh", "-tt", "-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", fmt.Sprintf("%s@%s", m.SSHConfig.PasswordAuth.Username, m.Ip), cmd)
 	} else {
-		command = exec.Command("ssh", "-tt", "-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", fmt.Sprintf("%s@%s", m.SSHConfig.PasswordAuth.Username, m.Ip), cmd)
+		command = exec.Command("ssh", "-tt", "-i", fmt.Sprintf("%s/%s", os.Getenv("CONFIG_FOLDER"), m.SSHConfig.PrivateKeyFile), "-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", fmt.Sprintf("%s@%s", m.SSHConfig.SSHAuth.Username, m.Ip), cmd)
 	}
 	ptmx, err := pty.Start(command)
 	if err != nil {
