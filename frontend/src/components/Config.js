@@ -113,7 +113,7 @@ export default function Config() {
                 label="Example"
                 multiline
                 maxRows={Infinity}
-                defaultValue={`# tPrivate key path is always relative to the config folder env variable
+                defaultValue={`# Private key file is always relative to the config folder env variable
 # No comments allowed in the actual config file          
 # configList:
 #   - sshConfig:
