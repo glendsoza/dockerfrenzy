@@ -1,0 +1,57 @@
+{
+    "name": "frontend",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@codemirror/language": "^6.10.1",
+        "@codemirror/legacy-modes": "^6.4.0",
+        "@codemirror/lint": "^6.7.1",
+        "@emotion/react": "^11.11.4",
+        "@emotion/styled": "^11.11.5",
+        "@mui/icons-material": "^5.15.6",
+        "@mui/material": "^5.15.6",
+        "@testing-library/jest-dom": "^5.17.0",
+        "@testing-library/react": "^13.4.0",
+        "@uiw/codemirror-theme-github": "^4.22.1",
+        "@uiw/react-codemirror": "^4.22.1",
+        "ag-grid-community": "^31.2.1",
+        "ag-grid-react": "^31.2.1",
+        "dotenv": "^16.4.5",
+        "notistack": "^3.0.1",
+        "npm": "^10.5.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-icons": "^5.0.1",
+        "react-router-dom": "^6.21.3",
+        "react-scripts": "5.0.1",
+        "react-use-websocket": "^4.5.0",
+        "react18-json-view": "^0.2.8",
+        "web-vitals": "^2.1.4",
+        "xterm": "^5.3.0",
+        "xterm-addon-fit": "^0.8.0"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}
